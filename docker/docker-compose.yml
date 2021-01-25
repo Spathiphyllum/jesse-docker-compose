@@ -14,7 +14,7 @@ services:
     build:
       context: ../
     ports:
-      - "127.0.0.1:7000:5000"
+      - "7000:5000"
     command: tail -f /dev/null
     volumes:
       - ../app:/jesse/app/
@@ -31,7 +31,7 @@ services:
     image: postgres
     restart: always
     ports:
-      - "127.0.10.60:5600:5432"
+      - "5600:5432"
     environment:
       - POSTGRES_USER=jesse_user
       - POSTGRES_PASSWORD=password
