@@ -1,0 +1,62 @@
+version: "3.7"
+
+volumes:
+  jesse_postgres_db:
+
+networks:
+  jesse:
+  share:
+  postgres:
+
+services:
+  jesse:
+    restart: always
+    build:
+      context: ../
+    ports:
+      - "127.0.0.1:7000:5000"
+    command: tail -f /dev/null
+    volumes:
+      - ../app:/jesse/app/
+    depends_on:
+      - postgres
+    networks:
+      jesse:
+        aliases:
+          - jesse.internal.local
+      share:
+      postgres:
+
+  postgres:
+    image: postgres
+    restart: always
+    ports:
+      - "127.0.10.60:5600:5432"
+    environment:
+      - POSTGRES_USER=jesse_user
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=jesse_db
+    volumes:
+      - jesse_postgres_db:/var/lib/postgresql/data
+    networks:
+      postgres:
+        aliases:
+          - jesse_postgresql.internal.local
+
+  jesse-trade-info:
+    restart: always
+    build:
+      context: ./jesse_trade_info
+    ports:
+      - "3000:3000"
+    environment:
+      HOST: 0.0.0.0
+    command: npm run start
+    depends_on:
+      - postgres
+    networks:
+      jesse:
+        aliases:
+          - jesse_trade_info.internal.local
+      share:
+      postgres:
